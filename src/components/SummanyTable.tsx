@@ -42,7 +42,7 @@ export function SummanyTable() {
       </div>
 
       <div className="grid grid-rows-7 grid-flow-col gap-3">
-        {summaryDates.map((date) => {
+        {sammary.length > 0 && summaryDates.map((date) => {
             const dayInSammary = sammary.find(day => {
                 return dayjs(date).isSame(day.date, 'day')
             })
@@ -51,7 +51,7 @@ export function SummanyTable() {
               key={date.toString()}
               date={date}
               amount={dayInSammary?.amount}
-              completed={dayInSammary?.completed}
+              defaultcompleted={dayInSammary?.completed}
             />
           );
         })}

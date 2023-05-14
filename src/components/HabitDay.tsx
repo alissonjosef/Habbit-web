@@ -4,24 +4,38 @@ import { ProgressBar } from "./ProgressBar";
 import clsx from "clsx";
 import { Check } from "phosphor-react";
 import dayjs from "dayjs";
+import { HabitsList } from "./HabitsList";
+import { useState } from "react";
 
 interface HabitDayProps {
   date: Date;
-  completed?: number;
+  defaultcompleted?: number;
   amount?: number;
 }
 
-export function HabitDay({ completed = 0, amount = 0, date }: HabitDayProps) {
+export function HabitDay({
+  defaultcompleted = 0,
+  amount = 0,
+  date,
+}: HabitDayProps) {
+  const [completed, setCompleted] = useState(defaultcompleted);
   const completPercentage =
     amount > 0 ? Math.round((completed / amount) * 100) : 0;
 
-    const fullAndMant = dayjs(date).format('DD/MM')
-    const dayOfWeek = dayjs(date).format('dddd')
+  const fullAndMant = dayjs(date).format("DD/MM");
+  const dayOfWeek = dayjs(date).format("dddd");
+
+  const today = dayjs().startOf("day").toDate();
+  const isCurrentDay = dayjs(date).isSame(today);
+
+  function handleAmountCompletdChanger(comleted: number) {
+    setCompleted(comleted);
+  }
 
   return (
     <Popover.Root>
       <Popover.Trigger
-        className={clsx("w-10 h-10  border-2 rounded-lg", {
+        className={clsx("w-10 h-10  border-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-background", {
           "bg-zinc-900 border-zinc-800": completPercentage === 0,
           "bg-violet-900 boder-violet-700":
             completPercentage >= 0 && completPercentage < 20,
@@ -32,6 +46,7 @@ export function HabitDay({ completed = 0, amount = 0, date }: HabitDayProps) {
           "bg-violet-600 boder-violet-600":
             completPercentage >= 60 && completPercentage < 80,
           "bg-violet-500 boder-violet-400": completPercentage >= 80,
+          "border-white": isCurrentDay,
         })}
       />
 
@@ -44,18 +59,10 @@ export function HabitDay({ completed = 0, amount = 0, date }: HabitDayProps) {
 
           <ProgressBar progress={completPercentage} />
 
-          <div className="mt-6 flex flex-col gap-3">
-            <Checkbox.Root className="flex items-center gap-3 group">
-              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-zinc-900 border-2 border-zinc-800 group-data-[state=checked]:bg-green-500 group-data-[state=checked]:border-green-500">
-                <Checkbox.Indicator>
-                  <Check size={20} className="text-white" />
-                </Checkbox.Indicator>
-              </div>
-              <samp className="font-semibold text-xl text-white leading-tight group-data-[state=checked]:line-through group-data-[state=checked]:text-zinc-400">
-                Beber 2L de agua
-              </samp>
-            </Checkbox.Root>
-          </div>
+          <HabitsList
+            date={date}
+            onCompletedChanger={handleAmountCompletdChanger}
+          />
           <Popover.Arrow height={8} width={16} className="fill-zinc-900" />
         </Popover.Content>
       </Popover.Portal>
